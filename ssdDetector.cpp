@@ -18,12 +18,9 @@
 //run:
 // ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel imageFiles
 #include <caffe/caffe.hpp>
-#define USE_OPENCV
-#ifdef USE_OPENCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#endif  // USE_OPENCV
 #include <algorithm>
 #include <iomanip>
 #include <iosfwd>
@@ -37,7 +34,6 @@
 
 #include <chrono>
 
-#ifdef USE_OPENCV
 using namespace cv;
 using namespace caffe;  // NOLINT(build/namespaces)
 
@@ -48,7 +44,7 @@ class Detector {
            const string& mean_file,
            const string& mean_value);
 
-  std::vector<vector<float> > Detect(const cv::Mat& img);
+  std::vector< vector<float> > Detect(const cv::Mat& img);
 
  private:
   void SetMean(const string& mean_file, const string& mean_value);
@@ -69,11 +65,8 @@ Detector::Detector(const string& model_file,
                    const string& weights_file,
                    const string& mean_file,
                    const string& mean_value) {
-#ifdef CPU_ONLY
-  Caffe::set_mode(Caffe::CPU);
-#else
+  //Caffe::set_mode(Caffe::CPU);
   Caffe::set_mode(Caffe::GPU);
-#endif
 Caffe::set_mode(Caffe::GPU);
   /* Load the network. */
   net_.reset(new Net<float>(model_file, TEST));
@@ -420,8 +413,3 @@ int main(int argc, char** argv) {
   }
   return 0;
 }
-#else
-int main(int argc, char** argv) {
-  LOG(FATAL) << "This example requires OpenCV; compile with USE_OPENCV.";
-}
-#endif  // USE_OPENCV
