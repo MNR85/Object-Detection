@@ -51,6 +51,7 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "mutex": "cpp"
     }
 }

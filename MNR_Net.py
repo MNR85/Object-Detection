@@ -24,6 +24,8 @@ class MNET:
                 caffe.set_device(0)
             else:
                 caffe.set_mode_cpu()
+            caffe.set_mode_gpu()
+            caffe.set_device(0)
             #os.environ["GLOG_minloglevel"] = "1"
             # with open(os.devnull, "w") as devnull:
             #     old_stdout = sys.stdout
