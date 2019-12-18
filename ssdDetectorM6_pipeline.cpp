@@ -102,7 +102,7 @@ int main(int argc, char **argv)
         {
             cv::Mat img = cv::imread(file);
             CHECK(!img.empty()) << "Unable to decode image " << file;
-            std::vector<vector<float>> detections = detector.pipelineDetector(img);
+            std::vector<vector<float>> detections = detector.pipelineDetectorButWorkSerial(img);
             /* Print the detection results. */
             for (int i = 0; i < detections.size(); ++i)
             {

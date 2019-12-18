@@ -81,6 +81,24 @@ cv::Mat drawDetections(cv::Mat img, vector<float> detection)
                 2);
     return img;
 }
+void saveDataToFiles(string fileName, Detector *detector)
+{
+    std::ofstream myfile;
+    myfile.open(fileName + ".csv");
+    myfile << "transTime,feedNet,netTime\n";
+    myfile<<"clockPerSec: ,"<<(CLOCKS_PER_SEC)<<"\n";
+    for (int i = 0; i < detector->trasformClocks.size(); i++)
+    {
+        int transTime = detector->trasformClocks.front();
+        detector->trasformClocks.pop();
+        int feedNet = detector->netClocks.front();
+        detector->netClocks.pop();
+        int netTime = detector->netClocks.front();
+        detector->netClocks.pop();
+        myfile << transTime << "," << feedNet << "," << netTime << "\n";
+    }
+    myfile.close();
+}
 int main(int argc, char **argv)
 {
     ::google::InitGoogleLogging(argv[0]);
@@ -117,6 +135,7 @@ int main(int argc, char **argv)
             }
             detector.runThread = false;
             popThread.join();
+    saveDataToFiles("executionTime", &detector);
 
             for (int i = 0; i < detector.detectionOutputs.size(); i++)
             {
