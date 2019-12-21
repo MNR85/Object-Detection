@@ -11,6 +11,11 @@
 #include <iostream>
 #include <fstream>
 #include <exception>
+
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+#include <unistd.h>
+
 using namespace cv;
 using namespace caffe; // NOLINT(build/namespaces)
 
@@ -80,7 +85,7 @@ cv::Mat drawDetections(cv::Mat img, vector<float> detection)
 int main(int argc, char **argv)
 {
     clock_t t1, t2, t3, t4;
-
+    struct sysinfo memInfo;
     ::google::InitGoogleLogging(argv[0]);
     // Print output to stderr (while still logging)
     //FLAGS_alsologtostderr = 1;
@@ -120,13 +125,22 @@ int main(int argc, char **argv)
     t1 = clock();
     while (true)
     {
+	if(frame_count%10==0){
+		sysinfo(&memInfo);
+		if(memInfo.totalram-memInfo.freeram<200000)
+			usleep(1000);
+	}
+	else
+	{
         // Capture frame-by-frame
         cap >> img;
         // If the frame is empty, break immediately
-        if (img.empty() || frame_count > 20)
+        if (img.empty() || frame_count>20)
             break;
+	
         detector.addImageToQ(img);
         frame_count++;
+	}
     }
     std::cout << "Added " << frame_count << " frame!" << std::endl;
     cap.release();
@@ -158,7 +172,7 @@ int main(int argc, char **argv)
         // Capture frame-by-frame
         cap >> img;
         // If the frame is empty, break immediately
-        if (img.empty() || frame_count > 20)
+        if (img.empty() || frame_count>20)
             break;
         detector.addImageToQ(img);
         frame_count++;
