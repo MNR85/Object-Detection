@@ -285,17 +285,42 @@ vector<vector<float>> Detector::pipelineDetectorButWorkSerial(const cv::Mat &img
 
     return res;
 }
-
+void Detector::clearLogs(){
+    std::queue<double> empty;
+    trasformClocks.swap(empty);
+    std::queue<double> empty2;
+    netClocks.swap(empty2);
+}
 void Detector::saveDataToFiles(string fileName)
 {
-    cudaDeviceProp prop;
-    cudaGetDeviceProperties(&prop, 0);
+
     std::ofstream myfile;
-    myfile.open(fileName + ".csv");
-    myfile << "GPU use = "<<useGPU<<"\n";
-    myfile << "Name: "<<prop.name << ", totalGlobalMem: "<<prop.totalGlobalMem<< ", totalConstMem: "<<prop.totalConstMem  <<", multiProcessorCount: "<< prop.multiProcessorCount <<", clockRate: "<<prop.clockRate<<"\n";
+    myfile.open(fileName + ".csv", ios::out | ios::app);
+    myfile << "GPU use = " << useGPU << "\n";
+    if (useGPU)
+    {
+        cudaDeviceProp prop;
+        cudaGetDeviceProperties(&prop, 0);
+        myfile << "Name"
+               << ", asyncEngineCount"
+               << ", maxThreadsPerMultiProcessor"
+               << ", totalGlobalMem"
+               << ", totalConstMem"
+               << ", unifiedAddressing"
+               << ", multiProcessorCount"
+               << ", clockRate"
+               << ", concurrentKernels"
+               << ", deviceOverlap"
+               << "\n";
+        myfile << prop.name << ", " << prop.asyncEngineCount << ", " << prop.maxThreadsPerMultiProcessor << ", " << prop.totalGlobalMem << ", " << prop.totalConstMem << ", " << prop.unifiedAddressing << ", " << prop.multiProcessorCount << ", " << prop.clockRate << ", " << prop.concurrentKernels << ", " << prop.deviceOverlap << "\n";
+    }
+    myfile << "clockPerSec," << (CLOCKS_PER_SEC) << "\n";
+    myfile << (CLOCKS_PER_SEC) << "\n";
+    myfile << "FPS,"
+           << "\n";
+    myfile << FPS << "\n";
     myfile << "transTime,feedNet,netTime\n";
-    myfile << "clockPerSec: ," << (CLOCKS_PER_SEC) << "\n";
+
     for (int i = 0; i < trasformClocks.size(); i++)
     {
         int transTime = trasformClocks.front();

@@ -1,6 +1,6 @@
 //build:
 //g++ -std=c++11 ssdDetector_time.cpp   -lboost_system -lcaffe -lglog -lgflags -ljsoncpp `pkg-config opencv --cflags --libs` -o ssd
-//g++ -std=c++11 ssdDetectorM7_pipeline.cpp MNR_Net.cpp   -lboost_system -lcaffe -lglog -lgflags -ljsoncpp -lpthread `pkg-config opencv --cflags --libs` -o ssd
+//g++ -std=c++11 ssdDetectorM7_pipeline.cpp MNR_Net.cpp   -lboost_system -lcaffe -lglog -lgflags -ljsoncpp -lpthread -lcudart `pkg-config opencv --cflags --libs` -o ssd
 //run:
 // ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel imageFiles
 #include <opencv2/highgui/highgui.hpp>

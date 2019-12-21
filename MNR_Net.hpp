@@ -28,6 +28,8 @@ public:
 
     // void feedNetwork(std::vector<cv::Mat> *input_channels);
     bool runThread = true;
+    double FPS=0;
+    void clearLogs();
     std::queue<vector<vector<float>>> detectionOutputs;    
 
     void setRunMode(bool useGPU);
