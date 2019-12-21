@@ -115,6 +115,8 @@ int main(int argc, char **argv)
             break;
         detector.addImageToQ(img);
         frame_count++;
+        // cv::imshow("Display window", img); // Show our image inside it.
+        // cv::waitKey(1);
     }
     std::cout<<"Added "<<frame_count<<" frame!"<<std::endl;
     cap.release();
@@ -134,14 +136,6 @@ int main(int argc, char **argv)
     for (int i = 0; i < detector.detectionOutputs.size(); i++)
     {
         cap >> img;
-        // bool success = cap.read(img);
-        // if (!success)
-        // {
-        //     LOG(INFO) << "xxProcess " << frame_count << " frames from " << videoName;
-        //     break;
-        // }
-        // cv::imshow("Display window", img); // Show our image inside it.
-        // cv::waitKey(0);
 
         std::vector<vector<float>> detections = detector.detectionOutputs.front();
         detector.detectionOutputs.pop();
@@ -154,7 +148,7 @@ int main(int argc, char **argv)
         video.write(img);
 
         cv::imshow("Display window", img); // Show our image inside it.
-        cv::waitKey(1);
+        // cv::waitKey(1);
     }
     std::cout << "Finished all" << std::endl;
 
