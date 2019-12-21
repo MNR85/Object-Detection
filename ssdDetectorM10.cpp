@@ -83,12 +83,12 @@ int main(int argc, char **argv)
 
     const string &model_file = argv[1];
     const string &weights_file = argv[2];
-    string videoName;
+    string videoName=argv[3];
     int mode = 0; // 0 for webcam, 1 for read from files
-    if (argc == 4)
-    {
-        videoName = argv[3];
-    }
+    // if (argc == 4)
+    // {
+    //     videoName = argv[3];
+    // }
     const string &file_type = FLAGS_file_type;
 
     // Initialize the network.
@@ -124,7 +124,10 @@ int main(int argc, char **argv)
     detector.runThread = false;
     // detector.getImageFromQThread();
     popThread.join();
-    detector.saveDataToFiles("executionTime_" + videoName);
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, 0);
+    string s= prop.name;
+    detector.saveDataToFiles("executionTime_"+s);
     
     // Define the codec and create VideoWriter object.The output is stored in 'outcpp.avi' file.
     VideoWriter video("outcpp.avi", CV_FOURCC('M', 'J', 'P', 'G'), 10, Size(frame_width, frame_height));

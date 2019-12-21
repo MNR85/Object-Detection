@@ -288,9 +288,12 @@ vector<vector<float>> Detector::pipelineDetectorButWorkSerial(const cv::Mat &img
 
 void Detector::saveDataToFiles(string fileName)
 {
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, 0);
     std::ofstream myfile;
     myfile.open(fileName + ".csv");
     myfile << "GPU use = "<<useGPU<<"\n";
+    myfile << "Name: "<<prop.name << ", totalGlobalMem: "<<prop.totalGlobalMem<< ", totalConstMem: "<<prop.totalConstMem  <<", multiProcessorCount: "<< prop.multiProcessorCount <<", clockRate: "<<prop.clockRate<<"\n";
     myfile << "transTime,feedNet,netTime\n";
     myfile << "clockPerSec: ," << (CLOCKS_PER_SEC) << "\n";
     for (int i = 0; i < trasformClocks.size(); i++)
