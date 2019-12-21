@@ -156,5 +156,5 @@ int main(int argc, char **argv)
     cap.release();
     video.release();
     // cv::waitKey(0);
-    return 1;
+    return 0;
 }
