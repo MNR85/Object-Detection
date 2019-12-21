@@ -128,16 +128,19 @@ int main(int argc, char **argv)
         if (frame_count % 10 == 0)
         {
             sysinfo(&memInfo);
-            // std::cout<<"Total: "<<memInfo.totalram<<", free: "<<memInfo.freeram<<std::endl;
-            if (memInfo.totalram - memInfo.freeram < 200000000)
+             std::cout<<"N: "<<frame_count<<", Total: "<<memInfo.totalram<<", free: "<<memInfo.freeram<<std::endl;
+            if (memInfo.totalram - memInfo.freeram < 200000000){
+std::cout<<"Used: "<<memInfo.totalram - memInfo.freeram<<std::endl;
                 usleep(1000);
+}
+
         }
         else
         {
             // Capture frame-by-frame
             cap >> img;
             // If the frame is empty, break immediately
-            if (img.empty() || frame_count > 20)
+            if (img.empty())// || frame_count > 20)
                 break;
 
             detector.addImageToQ(img);
@@ -183,7 +186,7 @@ int main(int argc, char **argv)
             // Capture frame-by-frame
             cap >> img;
             // If the frame is empty, break immediately
-            if (img.empty() || frame_count > 20)
+            if (img.empty())// || frame_count > 20)
                 break;
             detector.addImageToQ(img);
             frame_count++;
