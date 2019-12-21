@@ -4,7 +4,7 @@
 //g++ -std=c++11 ssdDetectorM11.cpp MNR_Net.cpp  -lboost_system -lcaffe -lglog -lgflags -ljsoncpp -lpthread -lcudart `pkg-config opencv --cflags --libs` -o ssd
 //run:
 // ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel imageFiles
-// ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel ../part02.mp4 
+// ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel ../part02.mp4
 #include <opencv2/highgui/highgui.hpp>
 
 #include "MNR_Net.hpp"
@@ -125,22 +125,24 @@ int main(int argc, char **argv)
     t1 = clock();
     while (true)
     {
-	if(frame_count%10==0){
-		sysinfo(&memInfo);
-		if(memInfo.totalram-memInfo.freeram<200000)
-			usleep(1000);
-	}
-	else
-	{
-        // Capture frame-by-frame
-        cap >> img;
-        // If the frame is empty, break immediately
-        if (img.empty() || frame_count>20)
-            break;
-	
-        detector.addImageToQ(img);
-        frame_count++;
-	}
+        if (frame_count % 10 == 0)
+        {
+            sysinfo(&memInfo);
+            // std::cout<<"Total: "<<memInfo.totalram<<", free: "<<memInfo.freeram<<std::endl;
+            if (memInfo.totalram - memInfo.freeram < 200000000)
+                usleep(1000);
+        }
+        else
+        {
+            // Capture frame-by-frame
+            cap >> img;
+            // If the frame is empty, break immediately
+            if (img.empty() || frame_count > 20)
+                break;
+
+            detector.addImageToQ(img);
+            frame_count++;
+        }
     }
     std::cout << "Added " << frame_count << " frame!" << std::endl;
     cap.release();
@@ -148,14 +150,14 @@ int main(int argc, char **argv)
     detector.runThread = false;
     popThread.join();
     t2 = clock();
-    detector.FPS = (double(t2 - t1) / double(CLOCKS_PER_SEC))/double(frame_count) ;
-    std::cout<<"Run time: "<<(double(t2 - t1) / double(CLOCKS_PER_SEC))<<std::endl;
+    detector.FPS = (double(t2 - t1) / double(CLOCKS_PER_SEC)) / double(frame_count);
+    std::cout << "Run time: " << (double(t2 - t1) / double(CLOCKS_PER_SEC)) << std::endl;
     detector.saveDataToFiles("executionTime_" + gpuName);
 
     std::cout << "Now runing on CPU" << std::endl;
     detector.clearLogs();
     detector.setRunMode(false);
-    detector.runThread= true;
+    detector.runThread = true;
     std::thread popThreadCPU(&Detector::getImageFromQThread, &detector); // spawn new thread that calls getImageFromQThread()
     cap.open(videoName);
 
@@ -169,13 +171,23 @@ int main(int argc, char **argv)
 
     while (true)
     {
-        // Capture frame-by-frame
-        cap >> img;
-        // If the frame is empty, break immediately
-        if (img.empty() || frame_count>20)
-            break;
-        detector.addImageToQ(img);
-        frame_count++;
+        if (frame_count % 10 == 0)
+        {
+            sysinfo(&memInfo);
+            // std::cout<<"Total: "<<memInfo.totalram<<", free: "<<memInfo.freeram<<std::endl;
+            if (memInfo.totalram - memInfo.freeram < 200000000)
+                usleep(1000);
+        }
+        else
+        {
+            // Capture frame-by-frame
+            cap >> img;
+            // If the frame is empty, break immediately
+            if (img.empty() || frame_count > 20)
+                break;
+            detector.addImageToQ(img);
+            frame_count++;
+        }
     }
     std::cout << "Added " << frame_count << " frame!" << std::endl;
     cap.release();
@@ -183,8 +195,8 @@ int main(int argc, char **argv)
     detector.runThread = false;
     popThreadCPU.join();
     t4 = clock();
-    std::cout<<"Run time: "<<(double(t4 - t3) / double(CLOCKS_PER_SEC))<<std::endl;
-    detector.FPS = (double(t4 - t3) / double(CLOCKS_PER_SEC))/double(frame_count) ;
+    std::cout << "Run time: " << (double(t4 - t3) / double(CLOCKS_PER_SEC)) << std::endl;
+    detector.FPS = (double(t4 - t3) / double(CLOCKS_PER_SEC)) / double(frame_count);
 
     detector.saveDataToFiles("executionTime_" + gpuName);
 
