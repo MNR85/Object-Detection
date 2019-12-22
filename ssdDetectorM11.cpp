@@ -153,8 +153,8 @@ int main(int argc, char **argv)
     detector.runThread = false;
     popThread.join();
     t2 = clock();
-    detector.FPS = (double(t2 - t1) / double(CLOCKS_PER_SEC)) / double(frame_count);
-    std::cout << "Run time: " << (double(t2 - t1) / double(CLOCKS_PER_SEC)) << std::endl;
+    detector.FPS = double(frame_count)/(double(t2 - t1) / double(CLOCKS_PER_SEC));
+    std::cout <<"FPS: "<< detector.FPS<<", Run time: " << (double(t2 - t1) / double(CLOCKS_PER_SEC)) << std::endl;
     detector.saveDataToFiles("executionTime_" + gpuName);
 
     std::cout << "Now runing on CPU" << std::endl;
@@ -200,8 +200,8 @@ int main(int argc, char **argv)
     detector.runThread = false;
     popThreadCPU.join();
     t4 = clock();
-    std::cout << "Run time: " << (double(t4 - t3) / double(CLOCKS_PER_SEC)) << std::endl;
-    detector.FPS = (double(t4 - t3) / double(CLOCKS_PER_SEC)) / double(frame_count);
+    std::cout<<"FPS: "<< detector.FPS << ", Run time: " << (double(t4 - t3) / double(CLOCKS_PER_SEC)) << std::endl;
+    detector.FPS = double(frame_count)/(double(t4 - t3) / double(CLOCKS_PER_SEC));
 
     detector.saveDataToFiles("executionTime_" + gpuName);
 

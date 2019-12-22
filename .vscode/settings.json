@@ -53,5 +53,6 @@
         "valarray": "cpp",
         "string": "cpp",
         "mutex": "cpp"
-    }
+    },
+    "python.pythonPath": "/usr/bin/python3"
 }

@@ -7,7 +7,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <caffe/caffe.hpp>
-#include "SSD_Out.hpp"
+// #include "SSD_Out.hpp"
 #include <chrono>
 #include "queue"
 #include <thread> // std::thread
@@ -28,13 +28,13 @@ public:
 
     // void feedNetwork(std::vector<cv::Mat> *input_channels);
     bool runThread = true;
-    double FPS=0;
+    double FPS = 0;
     void clearLogs();
-    std::queue<vector<vector<float>>> detectionOutputs;    
+    std::queue<vector<vector<float>>> detectionOutputs;
 
     void setRunMode(bool useGPU);
 
-    void saveDataToFiles(string fileName);
+    void saveDataToFiles(string fileName, string moreInfo);
 
 private:
     void initNet();
@@ -59,8 +59,11 @@ private:
     string model_file;
     string weights_file;
     std::queue<double> netClocks;
+    std::queue<int> netTimes;
     std::queue<double> trasformClocks;
-    bool useGPU=false;
+    std::queue<int> trasformTimes;
+
+    bool useGPU = false;
     void configGPUusage();
 };
 

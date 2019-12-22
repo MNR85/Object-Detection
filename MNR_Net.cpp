@@ -2,8 +2,8 @@
 #define MNRNET
 #include "MNR_Net.hpp"
 //#include <pthread.h>
-#ifndef DEBUG1
-#define DEBUG1
+#ifndef DEBUG
+#define DEBUG
 #endif
 // #include <thread>
 Detector::Detector(const string &model_file1,
@@ -191,9 +191,12 @@ vector<vector<float>> Detector::serialDetector(const cv::Mat &img) //, std::vect
 void Detector::addImageToQ(const cv::Mat &img)
 {
     clock_t t1, t2;
+    std::chrono::high_resolution_clock::time_point t11 = std::chrono::high_resolution_clock::now();
     t1 = clock();
     cv::Mat converted = transformInputGet(img);
     t2 = clock();
+    std::chrono::high_resolution_clock::time_point t22 = std::chrono::high_resolution_clock::now();
+    trasformTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t22 - t11).count());
     trasformClocks.push(double(t2 - t1));
     mtx.lock();
     normilizedImages.push(converted);
@@ -203,6 +206,7 @@ void Detector::addImageToQ(const cv::Mat &img)
 vector<vector<float>> Detector::getImageFromQ()
 {
     clock_t t1, t2, t3;
+    std::chrono::high_resolution_clock::time_point t11 = std::chrono::high_resolution_clock::now();
     t1 = clock();
     cv::Mat sample_resized;
     mtx.lock();
@@ -215,9 +219,13 @@ vector<vector<float>> Detector::getImageFromQ()
    * input layer of the network because it is wrapped by the cv::Mat
    * objects in input_channels. */
     cv::split(sample_resized, input_channels);
+    std::chrono::high_resolution_clock::time_point t22 = std::chrono::high_resolution_clock::now();
     t2 = clock();
     vector<vector<float>> res = forwardNet();
+    std::chrono::high_resolution_clock::time_point t33 = std::chrono::high_resolution_clock::now();
     t3 = clock();
+    netTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t22 - t11).count());
+    netTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t33 - t22).count());
     netClocks.push(double(t2 - t1));
     netClocks.push(double(t3 - t2));
     return res;
@@ -285,13 +293,14 @@ vector<vector<float>> Detector::pipelineDetectorButWorkSerial(const cv::Mat &img
 
     return res;
 }
-void Detector::clearLogs(){
+void Detector::clearLogs()
+{
     std::queue<double> empty;
     trasformClocks.swap(empty);
     std::queue<double> empty2;
     netClocks.swap(empty2);
 }
-void Detector::saveDataToFiles(string fileName)
+void Detector::saveDataToFiles(string fileName, string moreInfo)
 {
 
     std::ofstream myfile;
@@ -315,21 +324,25 @@ void Detector::saveDataToFiles(string fileName)
         myfile << prop.name << ", " << prop.asyncEngineCount << ", " << prop.maxThreadsPerMultiProcessor << ", " << prop.totalGlobalMem << ", " << prop.totalConstMem << ", " << prop.unifiedAddressing << ", " << prop.multiProcessorCount << ", " << prop.clockRate << ", " << prop.concurrentKernels << ", " << prop.deviceOverlap << "\n";
     }
     myfile << "clockPerSec," << (CLOCKS_PER_SEC) << "\n";
-    myfile << (CLOCKS_PER_SEC) << "\n";
-    myfile << "FPS,"
-           << "\n";
-    myfile << FPS << "\n";
-    myfile << "transTime,feedNet,netTime\n";
+    myfile << "FPS="<< FPS << "\n";
+    myfile << moreInfo << "\n";
+    myfile << "transTime, transClock, feedNetTime, feedNetClock, netTime, netClock\n";
 
     for (int i = 0; i < trasformClocks.size(); i++)
     {
-        int transTime = trasformClocks.front();
+        int transTime = trasformTimes.front();
+        int transClock = trasformClocks.front();
+        trasformTimes.pop();
         trasformClocks.pop();
-        int feedNet = netClocks.front();
+        int feedNetTime = netTimes.front();
+        int feedNetClock = netClocks.front();
+        netTimes.pop();
         netClocks.pop();
-        int netTime = netClocks.front();
+        int netTime = netTimes.front();
+        int netClock = netClocks.front();
+        netTimes.pop();
         netClocks.pop();
-        myfile << transTime << "," << feedNet << "," << netTime << "\n";
+        myfile << transTime << ", " << transClock << ", " << feedNetTime << ", " << feedNetClock << ", " << netTime << ", " << netClock << "\n";
     }
     myfile.close();
 }
