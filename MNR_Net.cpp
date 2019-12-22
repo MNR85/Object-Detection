@@ -324,11 +324,10 @@ void Detector::saveDataToFiles(string fileName, string moreInfo)
         myfile << prop.name << ", " << prop.asyncEngineCount << ", " << prop.maxThreadsPerMultiProcessor << ", " << prop.totalGlobalMem << ", " << prop.totalConstMem << ", " << prop.unifiedAddressing << ", " << prop.multiProcessorCount << ", " << prop.clockRate << ", " << prop.concurrentKernels << ", " << prop.deviceOverlap << "\n";
     }
     myfile << "clockPerSec," << (CLOCKS_PER_SEC) << "\n";
-    myfile << "FPS="<< FPS << "\n";
+    myfile << "FPS=" << FPS << "\n";
     myfile << moreInfo << "\n";
     myfile << "transTime, transClock, feedNetTime, feedNetClock, netTime, netClock\n";
-
-    for (int i = 0; i < trasformClocks.size(); i++)
+    for (int i = 0;trasformClocks.size()>0; i++)
     {
         int transTime = trasformTimes.front();
         int transClock = trasformClocks.front();
