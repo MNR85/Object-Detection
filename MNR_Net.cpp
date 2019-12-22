@@ -2,8 +2,8 @@
 #define MNRNET
 #include "MNR_Net.hpp"
 //#include <pthread.h>
-#ifndef DEBUG
-#define DEBUG
+#ifndef DEBUG1
+#define DEBUG1
 #endif
 // #include <thread>
 Detector::Detector(const string &model_file1,
