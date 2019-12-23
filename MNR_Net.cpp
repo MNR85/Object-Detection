@@ -5,6 +5,12 @@
 #ifndef DEBUG1
 #define DEBUG1
 #endif
+#ifndef CaptureClock
+#define CaptureClock
+#endif
+#ifndef CaptureTime
+#define CaptureTime
+#endif
 // #include <thread>
 Detector::Detector(const string &model_file1,
                    const string &weights_file1)
@@ -147,9 +153,13 @@ cv::Mat Detector::transformInputGet(const cv::Mat &img)
 }
 vector<vector<float>> Detector::serialDetector(const cv::Mat &img) //, std::vector<cv::Mat>* input_channels)
 {
+#ifdef CaptureClock
     clock_t t11, t21, t22, t33;
-
     t11 = clock();
+#endif
+#ifdef CaptureTime
+    std::chrono::high_resolution_clock::time_point t111 = std::chrono::high_resolution_clock::now();
+#endif
     //cv::Mat sample_normalized;
     std::vector<cv::Mat> input_channels;
 
@@ -162,19 +172,41 @@ vector<vector<float>> Detector::serialDetector(const cv::Mat &img) //, std::vect
 #ifdef DEBUG
     auto t2 = std::chrono::high_resolution_clock::now();
 #endif
+#ifdef CaptureClock
     t21 = clock();
-    transformInput(img, &input_channels); /* Normalize input image: resize, subtract, multiply */
-    t22 = clock();
+#endif
+#ifdef CaptureTime
+    std::chrono::high_resolution_clock::time_point t221 = std::chrono::high_resolution_clock::now();
+#endif
 
+    transformInput(img, &input_channels); /* Normalize input image: resize, subtract, multiply */
+#ifdef CaptureClock
+    t22 = clock();
+#endif
+#ifdef CaptureTime
+    std::chrono::high_resolution_clock::time_point t222 = std::chrono::high_resolution_clock::now();
+#endif
 #ifdef DEBUG
     auto t3 = std::chrono::high_resolution_clock::now();
 #endif
 
     vector<vector<float>> res = forwardNet(); //&sample_normalized);
+#ifdef CaptureClock
     t33 = clock();
+#endif
+#ifdef CaptureTime
+    std::chrono::high_resolution_clock::time_point t333 = std::chrono::high_resolution_clock::now();
+#endif
+#ifdef CaptureClock
     trasformClocks.push(double(t22 - t21));
     netClocks.push(double(t21 - t11));
     netClocks.push(double(t33 - t22));
+#endif
+#ifdef CaptureTime
+    trasformTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t222 - t221).count());
+    netTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t221 - t111).count());
+    netTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t333 - t222).count());
+#endif
 
 #ifdef DEBUG
     auto t4 = std::chrono::high_resolution_clock::now();
@@ -190,14 +222,26 @@ vector<vector<float>> Detector::serialDetector(const cv::Mat &img) //, std::vect
 //for pipeline
 void Detector::addImageToQ(const cv::Mat &img)
 {
+#ifdef CaptureClock
     clock_t t1, t2;
+#endif
+#ifdef CaptureTime
     std::chrono::high_resolution_clock::time_point t11 = std::chrono::high_resolution_clock::now();
+#endif
+#ifdef CaptureClock
     t1 = clock();
+#endif
     cv::Mat converted = transformInputGet(img);
+#ifdef CaptureClock
     t2 = clock();
+#endif
+#ifdef CaptureTime
     std::chrono::high_resolution_clock::time_point t22 = std::chrono::high_resolution_clock::now();
     trasformTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t22 - t11).count());
+#endif
+#ifdef CaptureClock
     trasformClocks.push(double(t2 - t1));
+#endif
     mtx.lock();
     normilizedImages.push(converted);
     mtx.unlock();
@@ -205,9 +249,15 @@ void Detector::addImageToQ(const cv::Mat &img)
 //for pipeline
 vector<vector<float>> Detector::getImageFromQ()
 {
+#ifdef CaptureClock
     clock_t t1, t2, t3;
+#endif
+#ifdef CaptureTime
     std::chrono::high_resolution_clock::time_point t11 = std::chrono::high_resolution_clock::now();
+#endif
+#ifdef CaptureClock
     t1 = clock();
+#endif
     cv::Mat sample_resized;
     mtx.lock();
     sample_resized = normilizedImages.front();
@@ -219,15 +269,27 @@ vector<vector<float>> Detector::getImageFromQ()
    * input layer of the network because it is wrapped by the cv::Mat
    * objects in input_channels. */
     cv::split(sample_resized, input_channels);
+#ifdef CaptureTime
     std::chrono::high_resolution_clock::time_point t22 = std::chrono::high_resolution_clock::now();
+#endif
+#ifdef CaptureClock
     t2 = clock();
+#endif
     vector<vector<float>> res = forwardNet();
+#ifdef CaptureTime
     std::chrono::high_resolution_clock::time_point t33 = std::chrono::high_resolution_clock::now();
+#endif
+#ifdef CaptureClock
     t3 = clock();
+#endif
+#ifdef CaptureTime
     netTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t22 - t11).count());
     netTimes.push(std::chrono::duration_cast<std::chrono::microseconds>(t33 - t22).count());
+#endif
+#ifdef CaptureClock
     netClocks.push(double(t2 - t1));
     netClocks.push(double(t3 - t2));
+#endif
     return res;
 }
 //for pipeline
@@ -300,11 +362,14 @@ void Detector::clearLogs()
     std::queue<double> empty2;
     netClocks.swap(empty2);
 }
-void Detector::saveDataToFiles(string fileName, string moreInfo)
+void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
 {
 
     std::ofstream myfile;
     myfile.open(fileName + ".csv", ios::out | ios::app);
+
+    myfile << moreInfo << "\n";
+
     myfile << "GPU use = " << useGPU << "\n";
     if (useGPU)
     {
@@ -325,24 +390,40 @@ void Detector::saveDataToFiles(string fileName, string moreInfo)
     }
     myfile << "clockPerSec," << (CLOCKS_PER_SEC) << "\n";
     myfile << "FPS=" << FPS << "\n";
-    myfile << moreInfo << "\n";
-    myfile << "transTime, transClock, feedNetTime, feedNetClock, netTime, netClock\n";
-    for (int i = 0;trasformClocks.size()>0; i++)
+#ifdef CaptureTime
+    myfile << "transTime, feedNetTime, netTime, ";
+#endif
+#ifdef CaptureClock
+    myfile << "transClock, feedNetClock, netClock";
+#endif
+    myfile << "\n";
+    for (int i = 0; frameCount > i; i++)
     {
+#ifdef CaptureTime
         int transTime = trasformTimes.front();
-        int transClock = trasformClocks.front();
         trasformTimes.pop();
-        trasformClocks.pop();
         int feedNetTime = netTimes.front();
-        int feedNetClock = netClocks.front();
         netTimes.pop();
-        netClocks.pop();
         int netTime = netTimes.front();
-        int netClock = netClocks.front();
         netTimes.pop();
+#endif
+#ifdef CaptureClock
+        int transClock = trasformClocks.front();
+        trasformClocks.pop();
+        int feedNetClock = netClocks.front();
         netClocks.pop();
-        myfile << transTime << ", " << transClock << ", " << feedNetTime << ", " << feedNetClock << ", " << netTime << ", " << netClock << "\n";
+        int netClock = netClocks.front();
+        netClocks.pop();
+#endif
+#ifdef CaptureTime
+        myfile << transTime << ", " << feedNetTime << ", " << netTime << ", ";
+#endif
+#ifdef CaptureClock
+        myfile << transClock << ", " << feedNetClock << ", " << netClock;
+#endif
+        myfile << "\n";
     }
+    myfile << "----------------\n\n";
     myfile.close();
 }
 #endif

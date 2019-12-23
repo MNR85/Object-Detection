@@ -34,7 +34,7 @@ public:
 
     void setRunMode(bool useGPU);
 
-    void saveDataToFiles(string fileName, string moreInfo);
+    void saveDataToFiles(string fileName, string moreInfo, int frameCount);
 
 private:
     void initNet();
