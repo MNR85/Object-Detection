@@ -7,7 +7,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <caffe/caffe.hpp>
-// #include "SSD_Out.hpp"
 #include <chrono>
 #include "queue"
 #include <thread> // std::thread
@@ -20,13 +19,11 @@ public:
     Detector(const string &model_file,
              const string &weights_file);
 
-    vector<vector<float>> serialDetector(const cv::Mat &img); //, std::vector<cv::Mat> *input_channels);
+    vector<vector<float>> serialDetector(const cv::Mat &img);
     vector<vector<float>> pipelineDetectorButWorkSerial(const cv::Mat &img);
-    // std::thread* runNetThread();
     void addImageToQ(const cv::Mat &img);
     void getImageFromQThread();
 
-    // void feedNetwork(std::vector<cv::Mat> *input_channels);
     bool runThread = true;
     double FPS = 0;
     void clearLogs();
@@ -47,9 +44,7 @@ private:
     vector<vector<float>> getImageFromQ();
 
     shared_ptr<Net<float>> net_;
-    //std::vector<cv::Mat> input_channels;
 
-    //std::vector<cv::Mat> *input_channels;
     cv::Size input_geometry_;
     int num_channels_;
     cv::Mat mean_;

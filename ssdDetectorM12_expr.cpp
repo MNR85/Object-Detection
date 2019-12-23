@@ -7,6 +7,12 @@
 // ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel imageFiles
 // ./ssd MobileNetSSD_deploy.prototxt MobileNetSSD_deploy.caffemodel ../part02.mp4
 
+//easy version
+//./compileRun.sh a
+//./compileRun.sh c
+//./compileRun.sh t
+//./compileRun.sh 
+
 #include <opencv2/highgui/highgui.hpp>
 
 #include "MNR_Net.hpp"

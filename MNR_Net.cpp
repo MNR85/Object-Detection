@@ -1,7 +1,6 @@
 #ifndef MNRNET
 #define MNRNET
 #include "MNR_Net.hpp"
-//#include <pthread.h>
 #ifndef DEBUG1
 #define DEBUG1
 #endif
@@ -11,7 +10,6 @@
 #ifndef CaptureTime
 #define CaptureTime
 #endif
-// #include <thread>
 Detector::Detector(const string &model_file1,
                    const string &weights_file1)
 {
@@ -70,11 +68,6 @@ void Detector::WrapInputLayer(std::vector<cv::Mat> *input_channels)
 }
 vector<vector<float>> Detector::forwardNet() //cv::Mat *input)
 {
-    //cv::split(*input, *&input_channels); /* This operation will write the separate BGR planes directly to the input layer of the network because it is wrapped by the cv::Mat objects in input_channels. */
-    // if (reinterpret_cast<float *>((&input_channels)->at(0).data) == net_->input_blobs()[0]->cpu_data())
-    //   std::cout << "Eqyal changgel";
-    // else
-    //   std::cout << "Input channels are not wrapping the input layer of the network.";
     net_->Forward();
     /* Copy the output layer to a std::vector */
     Blob<float> *result_blob = net_->output_blobs()[0];
@@ -317,25 +310,6 @@ void Detector::getImageFromQThread()
     }
     std::cout << "Finished thread." << std::endl;
 }
-// std::thread *Detector::runNetThread()
-// {
-//     std::cout << "start thread." << std::endl;
-//     std::thread popThread(&Detector::getImageFromQThread, this); // spawn new thread that calls getImageFromQThread()
-//     return &popThread;                                           //.join();
-// }
-// void Detector::feedNetwork(std::vector<cv::Mat> *input_channels)
-// {
-//     if (!normilizedImages.empty())
-//     {
-//         cv::Mat normalImage = normilizedImages.front();
-//         normilizedImages.pop();
-//         /* This operation will write the separate BGR planes directly to the
-//    * input layer of the network because it is wrapped by the cv::Mat
-//    * objects in input_channels. */
-//         cv::split(normalImage, *input_channels);
-//     }
-// }
-
 //for test pipeline work only!!!
 vector<vector<float>> Detector::pipelineDetectorButWorkSerial(const cv::Mat &img) //, std::vector<cv::Mat>* input_channels)
 {
