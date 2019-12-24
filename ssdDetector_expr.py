@@ -70,41 +70,22 @@ if __name__ == '__main__':
         ret, frame = cap.read()
         if ret == True and frameCount <args['frame']:
             if args['serial']:
-                netOut = detector.serialDetector(frame)
+                detector.serialDetector(frame)
             else:
+                #detector.pipelineDetectorButWorkSerial(frame)
                 detector.addImageToQ(frame)
-                #netOut = detector.pipelineDetectorButWorkSerial(frame)
-            #postFrame =getBoxedImage(frame,netOut)
 
             frameCount = frameCount+1
-            # print('frame count: ', frameCount)
-            #cv2.imshow("SSD", postFrame)
-            key = cv2.waitKey(1) & 0xFF
-            # # if the `q` key was pressed, break from the loop
-            # if key == ord("q"):
-            #     cam_stop = Value('b',True)
         # Break the loop
         else:
             break
-    print('out of while')
     if not args['serial']:
-        print ('stop thread')
         detector.runThread.value = False
         p.join()
 
-    print('finish process')
     cap.release()
-    cap.open(args['video'])
-    frameCount=0
-    while(cap.isOpened()):
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        if ret == True and frameCount <args['frame']: 
-            netOut = detector.detectionOutputs.get() 
-            postFrame =getBoxedImage(frame,netOut)      
-            cv2.imshow("SSD", postFrame)
-            key = cv2.waitKey(1) & 0xFF
-            frameCount = frameCount+1
-        # Break the loop
-        else:
-            break
+    print('finish process')
+    moreInfo = 'mode: serial '+str(args['serial'])+', gpu '+str(args['gpu'])
+    gpuName='.'
+    detector.saveDataToFiles("executionTime_python_" + gpuName, moreInfo, frameCount)
+    print('finish all')
