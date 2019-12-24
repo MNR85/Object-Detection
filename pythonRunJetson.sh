@@ -1,6 +1,6 @@
 run() {
     echo "Running... $*"
-    python3 ssdDetector_expr.py $* -n gl552vw
+    python ssdDetector_expr.py $* -n tegraK1
 }
 if [[ "${1}" == "t" ]]; then
     echo "Test all conditions"

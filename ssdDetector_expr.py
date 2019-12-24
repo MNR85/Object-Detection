@@ -7,7 +7,7 @@ import MNR_Net
 from imutils.video import VideoStream, FPS
 import os
 # os.environ["GLOG_minloglevel"] = "1"
-# os.environ["GLOG_minloglevel"] = "0"
+os.environ["GLOG_minloglevel"] = "0"
 CLASSES = ('background',
     'aeroplane', 'bicycle', 'bird', 'boat',
     'bottle', 'bus', 'car', 'cat', 'chair',
@@ -48,6 +48,8 @@ if __name__ == '__main__':
                         default='../part02.mp4', help="path to video input file", metavar="FILE")
     parser.add_argument("-f", "--frame", required=False,
                         type=int, default=20, help="Frame count")
+    parser.add_argument("-n", "--name", required=False, type=str,
+                        default='GL552vw', help="Name for log file", metavar="FILE")
 
     args = vars(parser.parse_args())
 
@@ -62,9 +64,17 @@ if __name__ == '__main__':
     print('mode: serial ',args['serial'], ', gpu ',args['gpu'])
 
     frameCount = 0
-    p = Process(name='popThread',target=detector.getImageFromQThread)#, args=[detector.runThread])
-    p.daemon = True
-    p.start()
+    if not args['serial']:
+        p = Process(name='popThread',target=detector.getImageFromQThread)#, args=[detector.runThread])
+        p.daemon = True
+        p.start()
+    if(not detector.netIsInit.value):
+        print('waiting for init net')
+        if args['serial']:
+            detector.initNet()
+        while not detector.netIsInit:
+            a=0
+        print('net is inited!')
     while(cap.isOpened()):
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -72,7 +82,7 @@ if __name__ == '__main__':
             if args['serial']:
                 detector.serialDetector(frame)
             else:
-                #detector.pipelineDetectorButWorkSerial(frame)
+                # detector.pipelineDetectorButWorkSerial(frame)
                 detector.addImageToQ(frame)
 
             frameCount = frameCount+1
@@ -86,6 +96,6 @@ if __name__ == '__main__':
     cap.release()
     print('finish process')
     moreInfo = 'mode: serial '+str(args['serial'])+', gpu '+str(args['gpu'])
-    gpuName='.'
+    gpuName=args['name']
     detector.saveDataToFiles("executionTime_python_" + gpuName, moreInfo, frameCount)
     print('finish all')

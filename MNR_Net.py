@@ -23,11 +23,14 @@ class Detector:
         self.caffeModel = caffeModel
         self.useGPU = False
         self.runThread = Value('b', True)
-        self.initNet()
+        self.netIsInit = Value('b', False)
+        # self.initNet()
         self.normilizedImages = Queue(maxsize=0)
         self.detectionOutputs = Queue(maxsize=0)
         self.trasformTimes = Queue(maxsize=0)
         self.netTimes = Queue(maxsize=0)
+        self.input_geometry_ = []
+        self.input_geometry_ = [300, 300] #self.net.params[0][0].data.shape
         system('clear')
         # print('[INFO] Reading from: '+protxt+' and '+caffeModel)
         # print('[INFO] Using GPU mode: '+str(useGPU))
@@ -45,10 +48,7 @@ class Detector:
     def initNet(self):
         self.configGPUusage()
         self.net = caffe.Net(self.protxt, self.caffeModel, caffe.TEST)
-        #print("Data shape: ", self.net.params['input_shape'].data.shape)
-        self.input_geometry_ = []
-        self.input_geometry_ = [300, 300] #self.net.params[0][0].data.shape
-        print("Data shape: ", self.input_geometry_)
+        self.netIsInit.value=True
 
     def transformInput(self, image):
         image = cv2.resize(image, (self.input_geometry_[
@@ -88,7 +88,8 @@ class Detector:
         return self.forwardNet(sample_resized)
 
     def getImageFromQThread(self):
-        self.configGPUusage()
+        #self.configGPUusage()
+        self.initNet()
         while (self.runThread.value or not self.normilizedImages.empty()):
             # print('queue size: ', self.normilizedImages.qsize(), self.runThread.value ,not self.normilizedImages.empty())
             if(self.normilizedImages.empty()):
