@@ -106,7 +106,7 @@ class Detector:
 	    counter = counter+1
 	print('self.trasformTimes', self.trasformTimes.qsize())
 	print('self.detectionOutputs', self.detectionOutputs.qsize())
-#	self.detectionOutputs.task_done()
+	self.detectionOutputs.task_done()
         print('Finished thread')
 	return;
 	print('after return')

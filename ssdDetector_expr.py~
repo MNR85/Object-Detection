@@ -101,5 +101,5 @@ if __name__ == '__main__':
     print('finish process')
     moreInfo = 'mode: serial '+str(args['serial'])+', gpu '+str(args['gpu'])
     gpuName=args['name']
-    detector.saveDataToFiles("executionTime_python_" + gpuName, moreInfo, frameCount)
+    #detector.saveDataToFiles("executionTime_python_" + gpuName, moreInfo, frameCount)
     print('finish all')
