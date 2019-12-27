@@ -1829,3 +1829,25 @@ transTime, feedNetTime, netTime, transClock, feedNetClock, netClock
 4528, 6, 214244, 8525, 9, 221003
 ----------------
 
+Detection method: Serial
+Clock = 2740758.000000, Chrono = 2629730, TimeR = 2.000000
+Clock = 2740761.000000, Chrono = 2629731, TimeR = 2.000000
+
+GPU use = 1
+Name, asyncEngineCount, maxThreadsPerMultiProcessor, totalGlobalMem, totalConstMem, unifiedAddressing, multiProcessorCount, clockRate, concurrentKernels, deviceOverlap
+GeForce GTX 960M, 1, 2048, 4242604032, 65536, 1, 5, 1176000, 1, 1
+clockPerSec,1000000
+FPS=3.64862
+transTime, feedNetTime, netTime, thread#1, thread#2transClock, feedNetClock, netClock
+47404, 474, 337996, 45509632, 338470, 4591, 476, 307966
+3771, 7, 232189, 0, 232196, 7767, 11, 235761
+3136, 5, 233108, 1835093621, 233113, 7135, 7, 237648
+2934, 6, 231914, 1700160613, 231920, 6928, 8, 235055
+2897, 6, 230660, 2019914866, 230666, 2895, 8, 235339
+3122, 5, 231125, 1920234561, 231130, 7065, 9, 234212
+4802, 7, 233139, 45326592, 233146, 8818, 10, 239534
+3005, 6, 230925, 0, 230931, 7002, 8, 234590
+3180, 7, 231540, 0, 231547, 7178, 11, 235087
+3000, 5, 232175, 0, 232180, 2998, 8, 240088
+----------------
+

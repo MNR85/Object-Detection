@@ -11,7 +11,7 @@
 //./compileRun.sh a
 //./compileRun.sh c
 //./compileRun.sh t
-//./compileRun.sh 
+//./compileRun.sh
 
 #include <opencv2/highgui/highgui.hpp>
 
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     const int frameCount = std::stoi(argv[4]);
     const bool serialDetector = (argv[5][0] == 's' ? true : false);
     const bool useGPU = (argv[6][0] == 'g' ? true : false);
-    std::cout << "Frame count: " << frameCount << ", SerialDetector: "<<argv[5] << serialDetector <<", UseGPU: "<<argv[6]<< useGPU << std::endl;
+    std::cout << "Frame count: " << frameCount << ", SerialDetector: " << argv[5] << serialDetector << ", UseGPU: " << argv[6] << useGPU << std::endl;
 
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, 0);
@@ -120,6 +120,8 @@ int main(int argc, char **argv)
                 continue;
             }
         }
+        std::chrono::high_resolution_clock::time_point t11 = std::chrono::high_resolution_clock::now();
+
         if (!cap.read(img) || frame_count >= frameCount)
             break;
         if (serialDetector)
@@ -127,6 +129,8 @@ int main(int argc, char **argv)
         else
             detector.addImageToQ(img);
         frame_count++;
+        std::chrono::high_resolution_clock::time_point t22 = std::chrono::high_resolution_clock::now();
+        detector.newPreprocess(std::chrono::duration_cast<std::chrono::microseconds>(t22 - t11).count());
     }
     std::cout << "Added " << frame_count << " frame!" << std::endl;
     cap.release();
@@ -153,7 +157,7 @@ int main(int argc, char **argv)
     std::cout << "FPS TOTAL: " << detector.FPS << ", Run time: " << (double(t2 - t1) / double(CLOCKS_PER_SEC)) << std::endl;
     std::cout << "Time: " << duration1 / 1000.0 << "ms, FPS: " << 1000000.0 / duration1 << std::endl;
     std::cout << "TimeR: " << difftime(t222, t111) * 1000.0 << std::endl;
-    string method = serialDetector ? "Serial" : "Parallel";
+    string method = serialDetector ? "Serial" : "Pipeline";
     string moreInfo = "Detection method: " + method + "\n";
     try
     {
@@ -164,7 +168,8 @@ int main(int argc, char **argv)
     {
         std::cerr << "In forwardNet(), collecting result - " << e.what() << '\n';
     }
-    detector.saveDataToFiles("executionTime_" + gpuName, moreInfo, frame_count);
+    string hw = useGPU ? "GPU" : "CPU";
+    detector.saveDataToFiles("executionTime_" + gpuName + "_" + method + "_" + hw, moreInfo, frame_count);
     // cv::waitKey(0);
     return 0;
 }

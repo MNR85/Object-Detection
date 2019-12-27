@@ -8,7 +8,7 @@ run() {
 }
 if [[ "${1}" == "a" ]]; then
     echo "Compile and run"
-    compile && run s g
+    compile && run 10 s g
 elif [[ "${1}" == "c" ]]; then
     echo "Compile only"
     compile
@@ -20,5 +20,5 @@ elif [[ "${1}" == "t" ]]; then
     run 500 p g
 else
     echo "Run only"
-    run 500 s c
+    run 10 s c
 fi

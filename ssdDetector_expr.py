@@ -74,10 +74,11 @@ if __name__ == '__main__':
             detector.initNet()
         while not detector.netIsInit:
             a=0
-	time.sleep(2)
-        print('net is inited!')
+    time.sleep(2)
+    print('net is inited!')
     while(cap.isOpened()):
         # Capture frame-by-frame
+        t1 = time.time()
         ret, frame = cap.read()
         if ret == True and frameCount <args['frame']:
             if args['serial']:
@@ -87,19 +88,29 @@ if __name__ == '__main__':
                 detector.addImageToQ(frame)
 
             frameCount = frameCount+1
+            detector.newPreprocess(time.time()-t1)
         # Break the loop
         else:
             break
     print('exit loop')
     if not args['serial']:
         detector.runThread.value = False
-	print('before join')
+        print('before join')
         p.join()
-	print('exit process')
+    print('exit process')
     print('closing cap')
     cap.release()
     print('finish process')
     moreInfo = 'mode: serial '+str(args['serial'])+', gpu '+str(args['gpu'])
+    if args['serial']==True:
+        method = 'Serial'
+    else:
+        method = 'Pipeline'
+    if args['gpu']==True:
+        hw = 'GPU'
+    else:
+        hw = 'CPU'
+
     gpuName=args['name']
-    detector.saveDataToFiles("executionTime_python_" + gpuName, moreInfo, frameCount)
+    detector.saveDataToFiles("executionTime_python_" + gpuName+"_"+method+"_"+hw, moreInfo, frameCount)
     print('finish all')

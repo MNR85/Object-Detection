@@ -25,10 +25,11 @@ class Detector:
         self.runThread = Value('b', True)
         self.netIsInit = Value('b', False)
         # self.initNet()
-        self.normilizedImages = Queue(maxsize=2000)
-        self.detectionOutputs = Queue(maxsize=2000)
-        self.trasformTimes = Queue(maxsize=2000)
-        self.netTimes = Queue(maxsize=2000)
+        self.normilizedImages = Queue(maxsize=0)
+        self.detectionOutputs = Queue(maxsize=0)
+        self.trasformTimes = Queue(maxsize=0)
+        self.preprocessTimes = Queue(maxsize=0)
+        self.netTimes = Queue(maxsize=0)
         self.input_geometry_ = []
         self.input_geometry_ = [300, 300] #self.net.params[0][0].data.shape
         system('clear')
@@ -89,27 +90,28 @@ class Detector:
 
     def getImageFromQThread(self):
         #self.configGPUusage()
-	counter=0
+        counter=0
         self.initNet()
         while (self.runThread.value or not self.normilizedImages.empty()):
             print('queue size: ', self.normilizedImages.qsize(), self.runThread.value ,not self.normilizedImages.empty())
             if(self.normilizedImages.empty()):
                 time.sleep(0.2)
                 continue
-	    self.getImageFromQ()
-	    #self.detectionOutputs.put(counter)
-	    self.detectionOutputs.put(self.getImageFromQ())
-	    #if(counter>300):
-		#self.getImageFromQ()
-	    #else:
-		#self.detectionOutputs.put(self.getImageFromQ())
-	    counter = counter+1
-	print('self.trasformTimes', self.trasformTimes.qsize())
-	print('self.detectionOutputs', self.detectionOutputs.qsize())
-#	self.detectionOutputs.task_done()
+            #self.getImageFromQ()
+            #self.detectionOutputs.put(counter)
+            self.detectionOutputs.put(self.getImageFromQ())
+            #if(counter>300):
+            #self.getImageFromQ()
+            #else:
+            #self.detectionOutputs.put(self.getImageFromQ())
+            counter = counter+1
+        
+        print('self.trasformTimes', self.trasformTimes.qsize())
+        print('self.detectionOutputs', self.detectionOutputs.qsize())
+    #	self.detectionOutputs.task_done()
         print('Finished thread')
-	return;
-	print('after return')
+        return
+        print('after return')
 
     def pipelineDetectorButWorkSerial(self, img):
         self.addImageToQ(img)
@@ -119,12 +121,20 @@ class Detector:
     def clearLogs(self):
         a = 0
 
+    def newPreprocess(self, timer):
+        self.preprocessTimes.put(timer)
+
     def saveDataToFiles(self, fileName, moreinfo, frameCount):
         f = open(fileName + ".csv", "a")
         f.write(moreinfo+"\n")
         f.write("GPU use = " + str(self.useGPU) + "\n")
-        f.write("transTime, feedNetTime, netTime\n")
+        f.write("transTime, feedNetTime, netTime, thread#1, thread#2\n")
         for i in range(frameCount):
-            f.write(str(self.trasformTimes.get()*1000000)+", "+str(self.netTimes.get()*1000000)+", "+str(self.netTimes.get()*1000000)+"\n")
+            TransTime = self.trasformTimes.get()*1000000
+            thread1 = self.preprocessTimes.get()*1000000
+            FeedTime = self.netTimes.get()*1000000
+            NetTime = self.netTimes.get()*1000000
+            thread2 = FeedTime + NetTime
+            f.write(str(TransTime)+", "+str(FeedTime)+", "+str(NetTime)+", "+str(thread1)+", "+str(thread2)+"\n")
         f.write("----------------\n\n")
         f.close()

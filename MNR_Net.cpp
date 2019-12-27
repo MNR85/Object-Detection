@@ -336,6 +336,12 @@ void Detector::clearLogs()
     std::queue<double> empty2;
     netClocks.swap(empty2);
 }
+
+void Detector::newPreprocess(int time)
+{
+    preprocessTimes.push(time);
+}
+
 void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
 {
 
@@ -365,7 +371,7 @@ void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
     myfile << "clockPerSec," << (CLOCKS_PER_SEC) << "\n";
     myfile << "FPS=" << FPS << "\n";
 #ifdef CaptureTime
-    myfile << "transTime, feedNetTime, netTime, ";
+    myfile << "transTime, feedNetTime, netTime, thread#1, thread#2, ";
 #endif
 #ifdef CaptureClock
     myfile << "transClock, feedNetClock, netClock";
@@ -380,6 +386,9 @@ void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
         netTimes.pop();
         int netTime = netTimes.front();
         netTimes.pop();
+        int thread1Time = preprocessTimes.front();
+        preprocessTimes.pop();
+        int thread2Time = feedNetTime+netTime;
 #endif
 #ifdef CaptureClock
         int transClock = trasformClocks.front();
@@ -390,7 +399,7 @@ void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
         netClocks.pop();
 #endif
 #ifdef CaptureTime
-        myfile << transTime << ", " << feedNetTime << ", " << netTime << ", ";
+        myfile << transTime << ", " << feedNetTime << ", " << netTime << ", "<< thread1Time << ", "<< thread2Time << ", ";
 #endif
 #ifdef CaptureClock
         myfile << transClock << ", " << feedNetClock << ", " << netClock;

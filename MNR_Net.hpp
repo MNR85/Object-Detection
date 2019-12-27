@@ -31,6 +31,7 @@ public:
 
     void setRunMode(bool useGPU);
 
+    void newPreprocess(int time);
     void saveDataToFiles(string fileName, string moreInfo, int frameCount);
 
 private:
@@ -57,6 +58,7 @@ private:
     std::queue<int> netTimes;
     std::queue<double> trasformClocks;
     std::queue<int> trasformTimes;
+    std::queue<int> preprocessTimes;
 
     bool useGPU = false;
     void configGPUusage();
