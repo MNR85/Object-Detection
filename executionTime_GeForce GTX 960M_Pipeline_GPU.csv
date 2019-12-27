@@ -1,0 +1,22 @@
+Detection method: Pipeline
+Clock = 353401.000000, Chrono = 138855, TimeR = 1.000000
+Clock = 912482.000000, Chrono = 836310, TimeR = 1.000000
+
+GPU use = 1
+Name, asyncEngineCount, maxThreadsPerMultiProcessor, totalGlobalMem, totalConstMem, unifiedAddressing, multiProcessorCount, clockRate, concurrentKernels, deviceOverlap
+GeForce GTX 960M, 1, 2048, 4242604032, 65536, 1, 5, 1176000, 1, 1
+clockPerSec,1000000
+FPS=10.9591
+transTime, feedNetTime, netTime, thread#1, thread#2, transClock, feedNetClock, netClock
+3016, 78631, 78324, 57826, 157013, 3011, 37983, 78332
+2950, 155, 56260, 7322, 56463, 2946, 156, 56267
+2788, 147, 50387, 6731, 50583, 6782, 147, 50452
+2884, 171, 47871, 7572, 48109, 6879, 171, 47882
+2773, 154, 47258, 6810, 47460, 6770, 155, 47258
+2891, 139, 47296, 7697, 47483, 6832, 140, 47367
+4470, 147, 48203, 9495, 48399, 8465, 151, 48196
+2868, 160, 46952, 8068, 47172, 6862, 161, 46966
+2855, 142, 49266, 6797, 49457, 6844, 143, 49266
+2980, 186, 46918, 7503, 47152, 2975, 186, 46931
+----------------
+

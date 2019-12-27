@@ -4,10 +4,10 @@ run() {
 }
 if [[ "${1}" == "t" ]]; then
     echo "Test all conditions"
-    run -f 10 -s
-    run -f 10 -s -g
-    run -f 10
-    run -f 10 -g
+    run -f 300 -s
+    run -f 300 -s -g
+    run -f 300
+    run -f 300 -g
 else
     echo "Run only"
     run -f 10 -s -g

@@ -69,13 +69,13 @@ if __name__ == '__main__':
     if not args['serial']:       
         p.start()
     if(not detector.netIsInit.value):
-        print('waiting for init net')
+        print('waiting for init net...')
         if args['serial']:
             detector.initNet()
         while not detector.netIsInit:
             a=0
     time.sleep(2)
-    print('net is inited!')
+    #print('net is inited!')
     while(cap.isOpened()):
         # Capture frame-by-frame
         t1 = time.time()
@@ -92,15 +92,10 @@ if __name__ == '__main__':
         # Break the loop
         else:
             break
-    print('exit loop')
     if not args['serial']:
         detector.runThread.value = False
-        print('before join')
         p.join()
-    print('exit process')
-    print('closing cap')
     cap.release()
-    print('finish process')
     moreInfo = 'mode: serial '+str(args['serial'])+', gpu '+str(args['gpu'])
     if args['serial']==True:
         method = 'Serial'
@@ -112,5 +107,6 @@ if __name__ == '__main__':
         hw = 'CPU'
 
     gpuName=args['name']
-    detector.saveDataToFiles("executionTime_python_" + gpuName+"_"+method+"_"+hw, moreInfo, frameCount)
+    print('start saving to file...')
+    detector.saveDataToFiles("executionTime_python_" + gpuName+"_"+method+"_"+hw, moreInfo, frameCount, args['serial'])
     print('finish all')

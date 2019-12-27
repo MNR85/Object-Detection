@@ -8,7 +8,7 @@ run() {
 }
 if [[ "${1}" == "a" ]]; then
     echo "Compile and run"
-    compile && run 10 s g
+    compile && run 10 p g
 elif [[ "${1}" == "c" ]]; then
     echo "Compile only"
     compile

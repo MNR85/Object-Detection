@@ -169,7 +169,7 @@ int main(int argc, char **argv)
         std::cerr << "In forwardNet(), collecting result - " << e.what() << '\n';
     }
     string hw = useGPU ? "GPU" : "CPU";
-    detector.saveDataToFiles("executionTime_" + gpuName + "_" + method + "_" + hw, moreInfo, frame_count);
+    detector.saveDataToFiles("executionTime_" + gpuName + "_" + method + "_" + hw, moreInfo, frame_count, serialDetector);
     // cv::waitKey(0);
     return 0;
 }

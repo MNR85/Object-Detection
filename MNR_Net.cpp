@@ -291,6 +291,8 @@ void Detector::getImageFromQThread()
     configGPUusage();
     while (runThread || !normilizedImages.empty())
     {
+        std::chrono::high_resolution_clock::time_point t11 = std::chrono::high_resolution_clock::now();
+
         if (normilizedImages.empty())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -301,6 +303,8 @@ void Detector::getImageFromQThread()
         auto t1 = std::chrono::high_resolution_clock::now();
 #endif
         detectionOutputs.push(getImageFromQ());
+        std::chrono::high_resolution_clock::time_point t22 = std::chrono::high_resolution_clock::now();
+        thread2Times.push(std::chrono::duration_cast<std::chrono::microseconds>(t22 - t11).count());
 #ifdef DEBUG
         auto t2 = std::chrono::high_resolution_clock::now();
         int duration1 = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
@@ -339,10 +343,10 @@ void Detector::clearLogs()
 
 void Detector::newPreprocess(int time)
 {
-    preprocessTimes.push(time);
+    thread1Times.push(time);
 }
 
-void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
+void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount, bool isSerial)
 {
 
     std::ofstream myfile;
@@ -371,7 +375,10 @@ void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
     myfile << "clockPerSec," << (CLOCKS_PER_SEC) << "\n";
     myfile << "FPS=" << FPS << "\n";
 #ifdef CaptureTime
-    myfile << "transTime, feedNetTime, netTime, thread#1, thread#2, ";
+    myfile << "transTime, feedNetTime, netTime, ";
+    if (!isSerial)
+        myfile << "thread#1, thread#2, ";
+
 #endif
 #ifdef CaptureClock
     myfile << "transClock, feedNetClock, netClock";
@@ -386,9 +393,16 @@ void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
         netTimes.pop();
         int netTime = netTimes.front();
         netTimes.pop();
-        int thread1Time = preprocessTimes.front();
-        preprocessTimes.pop();
-        int thread2Time = feedNetTime+netTime;
+        int thread1Time = 0;
+        int thread2Time = 0;
+        if (!isSerial)
+        {
+            thread1Time = thread1Times.front();
+            thread1Times.pop();
+            thread2Time = thread2Times.front();
+            thread2Times.pop();
+        }
+
 #endif
 #ifdef CaptureClock
         int transClock = trasformClocks.front();
@@ -399,7 +413,9 @@ void Detector::saveDataToFiles(string fileName, string moreInfo, int frameCount)
         netClocks.pop();
 #endif
 #ifdef CaptureTime
-        myfile << transTime << ", " << feedNetTime << ", " << netTime << ", "<< thread1Time << ", "<< thread2Time << ", ";
+        myfile << transTime << ", " << feedNetTime << ", " << netTime << ", ";
+        if (!isSerial)
+            myfile << thread1Time << ", " << thread2Time << ", ";
 #endif
 #ifdef CaptureClock
         myfile << transClock << ", " << feedNetClock << ", " << netClock;

@@ -1,13 +1,13 @@
-from os import system  # For clearing console
-import numpy as np  # For postProcessing
 import cv2  # For transform image
+import numpy as np  # For postProcessing
+from os import system  # For clearing console
 import os
 import sys
 sys.path.append("/home/mnr/caffe-ssd2/python/")
 import caffe
-
-import time
 from multiprocessing import Process, Value, Queue
+import time
+
 
 
 class Detector:
@@ -28,17 +28,20 @@ class Detector:
         self.normilizedImages = Queue(maxsize=0)
         self.detectionOutputs = Queue(maxsize=0)
         self.trasformTimes = Queue(maxsize=0)
-        self.preprocessTimes = Queue(maxsize=0)
+        self.thread1Times = Queue(maxsize=0)
+        self.thread2Times = Queue(maxsize=0)
         self.netTimes = Queue(maxsize=0)
         self.input_geometry_ = []
-        self.input_geometry_ = [300, 300] #self.net.params[0][0].data.shape
+        self.input_geometry_ = [300, 300]  # self.net.params[0][0].data.shape
         system('clear')
         # print('[INFO] Reading from: '+protxt+' and '+caffeModel)
         # print('[INFO] Using GPU mode: '+str(useGPU))
         # print('[INFO] Using caffe transform: '+str(useCaffe))
         # print('[INFO] Transform size: H'+str(self.nh)+' W'+str(self.nw))
+
     def setRunMode(self, useGPU1):
         self.useGPU = useGPU1
+
     def configGPUusage(self):
         if (self.useGPU == True):
             caffe.set_device(0)
@@ -49,7 +52,7 @@ class Detector:
     def initNet(self):
         self.configGPUusage()
         self.net = caffe.Net(self.protxt, self.caffeModel, caffe.TEST)
-        self.netIsInit.value=True
+        self.netIsInit.value = True
 
     def transformInput(self, image):
         image = cv2.resize(image, (self.input_geometry_[
@@ -64,8 +67,8 @@ class Detector:
     def forwardNet(self, preImage):
         t1 = time.time()
         self.net.blobs['data'].data[...] = preImage
-        t2= time.time()
-        res=  self.net.forward()
+        t2 = time.time()
+        res = self.net.forward()
         t3 = time.time()
         self.netTimes.put(t2-t1)
         self.netTimes.put(t3-t2)
@@ -89,26 +92,28 @@ class Detector:
         return self.forwardNet(sample_resized)
 
     def getImageFromQThread(self):
-        #self.configGPUusage()
-        counter=0
+        # self.configGPUusage()
+        counter = 0
         self.initNet()
         while (self.runThread.value or not self.normilizedImages.empty()):
-            print('queue size: ', self.normilizedImages.qsize(), self.runThread.value ,not self.normilizedImages.empty())
+            t1 = time.time()
+            #print('queue size: ', self.normilizedImages.qsize(), self.runThread.value, not self.normilizedImages.empty())
             if(self.normilizedImages.empty()):
                 time.sleep(0.2)
                 continue
-            #self.getImageFromQ()
-            #self.detectionOutputs.put(counter)
+            # self.getImageFromQ()
+            # self.detectionOutputs.put(counter)
             self.detectionOutputs.put(self.getImageFromQ())
-            #if(counter>300):
-            #self.getImageFromQ()
-            #else:
-            #self.detectionOutputs.put(self.getImageFromQ())
+            # if(counter>300):
+            # self.getImageFromQ()
+            # else:
+            # self.detectionOutputs.put(self.getImageFromQ())
             counter = counter+1
-        
-        print('self.trasformTimes', self.trasformTimes.qsize())
-        print('self.detectionOutputs', self.detectionOutputs.qsize())
-    #	self.detectionOutputs.task_done()
+            self.thread2Times.put(time.time()-t1)
+
+        #print('self.thread2Times', self.thread2Times.qsize())
+        #print('self.detectionOutputs', self.detectionOutputs.qsize())
+        # self.detectionOutputs.task_done()
         print('Finished thread')
         return
         print('after return')
@@ -122,19 +127,27 @@ class Detector:
         a = 0
 
     def newPreprocess(self, timer):
-        self.preprocessTimes.put(timer)
+        self.thread1Times.put(timer)
 
-    def saveDataToFiles(self, fileName, moreinfo, frameCount):
+    def saveDataToFiles(self, fileName, moreinfo, frameCount, isSerial):
         f = open(fileName + ".csv", "a")
         f.write(moreinfo+"\n")
         f.write("GPU use = " + str(self.useGPU) + "\n")
-        f.write("transTime, feedNetTime, netTime, thread#1, thread#2\n")
+        f.write("transTime, feedNetTime, netTime")
+        if isSerial==False:
+            f.write(", thread#1, thread#2")
+        f.write("\n")
+
         for i in range(frameCount):
             TransTime = self.trasformTimes.get()*1000000
-            thread1 = self.preprocessTimes.get()*1000000
             FeedTime = self.netTimes.get()*1000000
             NetTime = self.netTimes.get()*1000000
-            thread2 = FeedTime + NetTime
-            f.write(str(TransTime)+", "+str(FeedTime)+", "+str(NetTime)+", "+str(thread1)+", "+str(thread2)+"\n")
+            if isSerial==False:
+                thread1 = self.thread1Times.get()*1000000
+                thread2 = self.thread2Times.get()*1000000
+            f.write(str(TransTime)+", "+str(FeedTime)+", " + str(NetTime))
+            if isSerial==False:
+                f.write(", "+str(thread1)+", "+str(thread2))
+            f.write("\n")
         f.write("----------------\n\n")
         f.close()
