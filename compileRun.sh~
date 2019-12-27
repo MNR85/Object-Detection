@@ -14,10 +14,10 @@ elif [[ "${1}" == "c" ]]; then
     compile
 elif [[ "${1}" == "t" ]]; then
     echo "Test all conditions"
-    run 300 s c
-    run 300 s g
-    run 300 p c
-    run 300 p g
+    run 500 s c
+    run 500 s g
+    run 500 p c
+    run 500 p g
 else
     echo "Run only"
     run 10 s c
