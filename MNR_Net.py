@@ -80,6 +80,56 @@ class Detector:
         t2 = time.time()
         self.trasformTimes.put(t2-t1)
         return self.forwardNet(trans)
+    
+    def serialDetector2Stage(self, img):
+        trans = self.transformInput(img)
+        self.net.blobs['data'].data[...] = trans
+        t1 = time.time()
+        self.forwardNet(trans)
+        t2 = time.time()
+        self.net.forward(end='conv2')
+        dataMid = self.net.blobs['conv2'].data
+        t3 = time.time()
+        self.net.blobs['conv2'].data[...] = dataMid
+        res = self.net.forward(start='conv2')
+        t4 = time.time()
+        dur1 = (t2-t1)*1000000
+        dur2 = (t4-t2)*1000000
+
+        print('time1: '+str(dur1)+', time2: '+str(dur2)+' dif: '+str(dur2-dur1)+' p1: '+str(t3-t2)+' p2: '+str(t4-t3))
+        return res
+
+    def serialDetectorMultiStage(self, img, itr):
+        trans = self.transformInput(img)
+        if itr==0:
+            caffe.set_device(0)
+            caffe.set_mode_gpu()
+            t1 = time.time()
+            self.net.blobs['data'].data[...] = trans
+            res =self.net.forward()
+            t2 = time.time()
+            print('p1: '+str(t2-t1))
+        else:
+
+            t0 = time.time()
+            caffe.set_mode_cpu()
+            self.net.blobs['data'].data[...] = trans
+            t1 = time.time()
+            str1 = 'conv'+str(itr)
+            print('target layer : '+str1)
+            self.net.forward(end=str1)
+            dataMid = self.net.blobs[str1].data
+            t2 = time.time()
+            self.net.blobs[str1].data[...] = dataMid
+            t11 = time.time()
+            caffe.set_device(0)
+            caffe.set_mode_gpu()
+            t22 = time.time()
+            t3 = time.time()
+            res = self.net.forward(start=str1)
+            t4 = time.time()
+            print('p1: '+str(t2-t1)+', p2: '+str(t4-t3)+', sw: '+str(t22-t11)+', total: '+str(t4-t0))
+        return res
 
     def addImageToQ(self, img):
         t1 = time.time()
