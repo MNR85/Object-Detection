@@ -97,4 +97,4 @@ if __name__ == '__main__':
         #if key == ord("q"):
             #break
 
-    #key = cv2.waitKey(0)
+    key = cv2.waitKey(0)
