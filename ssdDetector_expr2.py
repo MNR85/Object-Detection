@@ -16,7 +16,34 @@ CLASSES = ('background',
     'sheep', 'sofa', 'train', 'tvmonitor')
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
+def getBoxedImage2(origimg, net_out):
+    # print('net: ', net_out)
+    h = origimg.shape[0]
+    w = origimg.shape[1]
+    # box = net_out['detection_out'][0,0,:,3:7] * np.array([w, h, w, h])
+
+    # cls = net_out['detection_out'][0,0,:,1]
+    # conf = net_out['detection_out'][0,0,:,2]
+
+    box = net_out[0,0,:,3:7] * np.array([w, h, w, h])
+
+    cls = net_out[0,0,:,1]
+    conf = net_out[0,0,:,2]
+    
+    box, conf, cls = (box.astype(np.int32), conf, cls)
+    for i in range(len(box)):
+        p1 = (box[i][0], box[i][1])
+        p2 = (box[i][2], box[i][3])
+        cv2.rectangle(origimg, p1, p2, COLORS[int(cls[i])], 2)#(0,255,0))
+        p3 = (max(p1[0], 15), max(p1[1], 15))
+        title = "%s:%.2f" % (CLASSES[int(cls[i])], conf[i])
+        # print('title: '+title+', rect: ',box[i])
+        cv2.putText(origimg, title, p3, cv2.FONT_ITALIC, 0.6, (0, 255, 0), 1)
+        
+    return origimg
+
 def getBoxedImage(origimg, net_out):
+    # print('net: ', net_out)
     h = origimg.shape[0]
     w = origimg.shape[1]
     box = net_out['detection_out'][0,0,:,3:7] * np.array([w, h, w, h])
@@ -62,12 +89,12 @@ if __name__ == '__main__':
     tmpF = cv2.imread('example_01.jpg')
     detector.initNet()
     for i in range(0,13):
-        netOut = detector.serialDetectorMultiStage(frame, i)
-    #     postFrame = getBoxedImage(tmpF, netOut)
-    #     cv2.imshow("SSD", postFrame)
-    #     key = cv2.waitKey(1) & 0xFF
-    #     # if the `q` key was pressed, break from the loop
-    #     if key == ord("q"):
-    #         break
+        netOut = detector.forwardMultiStage(frame, i)
+        postFrame = getBoxedImage(tmpF, netOut)
+        cv2.imshow("SSD", postFrame)
+        key = cv2.waitKey(1) & 0xFF
+        # if the `q` key was pressed, break from the loop
+        if key == ord("q"):
+            break
 
-    # key = cv2.waitKey(0)
+    key = cv2.waitKey(0)
