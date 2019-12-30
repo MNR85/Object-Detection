@@ -101,9 +101,9 @@ class Detector:
 
     def forwardMultiStageSWcg(self, img, itr):
         trans = self.transformInput(img)
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         startT = time.time()
         
         t1 = time.time()
@@ -114,9 +114,9 @@ class Detector:
         t2 = time.time()
         print('1: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv1'].data
@@ -126,9 +126,9 @@ class Detector:
         t2 = time.time()
         print('2: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv2'].data
@@ -138,9 +138,9 @@ class Detector:
         t2 = time.time()
         print('3: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv3'].data
@@ -150,9 +150,9 @@ class Detector:
         t2 = time.time()
         print('4: '+str(t2-t1)),
 
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv4'].data
@@ -162,9 +162,9 @@ class Detector:
         t2 = time.time()
         print('5: '+str(t2-t1)),
 
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv5'].data
@@ -174,9 +174,9 @@ class Detector:
         t2 = time.time()
         print('6: '+str(t2-t1)),
 
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv6'].data
@@ -186,9 +186,9 @@ class Detector:
         t2 = time.time()
         print('7: '+str(t2-t1)),
 
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv7'].data
@@ -198,9 +198,9 @@ class Detector:
         t2 = time.time()
         print('8: '+str(t2-t1)),
 
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv8'].data
@@ -210,9 +210,9 @@ class Detector:
         t2 = time.time()
         print('9: '+str(t2-t1)),
 
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv9'].data
@@ -222,9 +222,9 @@ class Detector:
         t2 = time.time()
         print('10: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv10'].data
@@ -234,9 +234,9 @@ class Detector:
         t2 = time.time()
         print('11: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv11'].data
@@ -246,9 +246,9 @@ class Detector:
         t2 = time.time()
         print('12: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv12'].data
@@ -258,9 +258,9 @@ class Detector:
         t2 = time.time()
         print('13: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv13'].data
@@ -277,9 +277,9 @@ class Detector:
 
     def forwardMultiStageSWgc(self, img, itr):
         trans = self.transformInput(img)
-        #caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         startT = time.time()
         
         t1 = time.time()
@@ -290,9 +290,9 @@ class Detector:
         t2 = time.time()
         print('1: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv1'].data
@@ -302,9 +302,9 @@ class Detector:
         t2 = time.time()
         print('2: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv2'].data
@@ -314,9 +314,9 @@ class Detector:
         t2 = time.time()
         print('3: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv3'].data
@@ -326,9 +326,9 @@ class Detector:
         t2 = time.time()
         print('4: '+str(t2-t1)),
 
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv4'].data
@@ -338,9 +338,9 @@ class Detector:
         t2 = time.time()
         print('5: '+str(t2-t1)),
 
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv5'].data
@@ -350,9 +350,9 @@ class Detector:
         t2 = time.time()
         print('6: '+str(t2-t1)),
 
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv6'].data
@@ -362,9 +362,9 @@ class Detector:
         t2 = time.time()
         print('7: '+str(t2-t1)),
 
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv7'].data
@@ -374,9 +374,9 @@ class Detector:
         t2 = time.time()
         print('8: '+str(t2-t1)),
 
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv8'].data
@@ -386,9 +386,9 @@ class Detector:
         t2 = time.time()
         print('9: '+str(t2-t1)),
 
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
         
         t1 = time.time()
         dataMid = self.net.blobs['conv9'].data
@@ -398,9 +398,9 @@ class Detector:
         t2 = time.time()
         print('10: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv10'].data
@@ -410,9 +410,9 @@ class Detector:
         t2 = time.time()
         print('11: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv11'].data
@@ -422,9 +422,9 @@ class Detector:
         t2 = time.time()
         print('12: '+str(t2-t1)),
         
-        # caffe.set_device(0)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv12'].data
@@ -434,9 +434,9 @@ class Detector:
         t2 = time.time()
         print('13: '+str(t2-t1)),
         
-        caffe.set_device(0)
+        # caffe.set_device(0)
         # caffe.set_mode_gpu()
-        # caffe.set_mode_cpu()
+        caffe.set_mode_cpu()
 
         t1 = time.time()
         dataMid = self.net.blobs['conv13'].data
@@ -452,10 +452,11 @@ class Detector:
         return res
 
     def forwardMultiStageDivide(self, img, itr):
+        caffe.set_device(0)
         caffe.set_mode_gpu()
-        caffe.set_mode_cpu()
+        # caffe.set_mode_cpu()
         trans = self.transformInput(img)
-        #caffe.set_device(0)
+        
         
         startT = time.time()
         t1 = time.time()
@@ -536,7 +537,7 @@ class Detector:
         t2 = time.time()
         print('11: '+str(t2-t1)),
         t1 = time.time()
-        caffe.set_device(0)
+        caffe.set_mode_cpu()
         dataMid = self.net.blobs['conv11'].data
         self.net.blobs['conv11'].data[...] = dataMid
         # t1 = time.time()

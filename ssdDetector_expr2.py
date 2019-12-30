@@ -90,12 +90,12 @@ if __name__ == '__main__':
     detector.initNet()
     for i in range(0,10):
         netOut = detector.forwardMultiStageDivide(frame, i)
-    # print('gpu cpu:')
-    # for i in range(0,10):
-    #     detector.forwardMultiStageSWgc(frame, i)
-    # print('cpu gpu:')
-    # for i in range(0,10):
-    #     detector.forwardMultiStageSWcg(frame, i)
+    print('gpu cpu:')
+    for i in range(0,10):
+        detector.forwardMultiStageSWgc(frame, i)
+    print('cpu gpu:')
+    for i in range(0,10):
+        detector.forwardMultiStageSWcg(frame, i)
         #postFrame = getBoxedImage(tmpF, netOut)
         #cv2.imshow("SSD", postFrame)
         #key = cv2.waitKey(1) & 0xFF
