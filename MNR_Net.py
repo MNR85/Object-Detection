@@ -99,6 +99,358 @@ class Detector:
         print('time1: '+str(dur1)+', time2: '+str(dur2)+' dif: '+str(dur2-dur1)+' p1: '+str(t3-t2)+' p2: '+str(t4-t3))
         return res
 
+    def forwardMultiStageSWcg(self, img, itr):
+        trans = self.transformInput(img)
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        startT = time.time()
+        
+        t1 = time.time()
+        self.net.blobs['data'].data[...] = trans
+        startLayer = ''
+        # t1 = time.time()
+        self.net.forward(end='conv1')
+        t2 = time.time()
+        print('1: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv1'].data
+        self.net.blobs['conv1'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv1', end='conv2')
+        t2 = time.time()
+        print('2: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv2'].data
+        self.net.blobs['conv2'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv2', end='conv3')
+        t2 = time.time()
+        print('3: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv3'].data
+        self.net.blobs['conv3'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv3', end='conv4')
+        t2 = time.time()
+        print('4: '+str(t2-t1)),
+
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv4'].data
+        self.net.blobs['conv4'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv4', end='conv5')
+        t2 = time.time()
+        print('5: '+str(t2-t1)),
+
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv5'].data
+        self.net.blobs['conv5'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv5', end='conv6')
+        t2 = time.time()
+        print('6: '+str(t2-t1)),
+
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv6'].data
+        self.net.blobs['conv6'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv6', end='conv7')
+        t2 = time.time()
+        print('7: '+str(t2-t1)),
+
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv7'].data
+        self.net.blobs['conv7'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv7', end='conv8')
+        t2 = time.time()
+        print('8: '+str(t2-t1)),
+
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv8'].data
+        self.net.blobs['conv8'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv8', end='conv9')
+        t2 = time.time()
+        print('9: '+str(t2-t1)),
+
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv9'].data
+        self.net.blobs['conv9'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv9', end='conv10')
+        t2 = time.time()
+        print('10: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv10'].data
+        self.net.blobs['conv10'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv10', end='conv11')
+        t2 = time.time()
+        print('11: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv11'].data
+        self.net.blobs['conv11'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv11', end='conv12')
+        t2 = time.time()
+        print('12: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv12'].data
+        #t1 = time.time()
+        self.net.blobs['conv12'].data[...] = dataMid
+        self.net.forward(start = 'conv12', end='conv13')
+        t2 = time.time()
+        print('13: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv13'].data
+        self.net.blobs['conv13'].data[...] = dataMid
+        # t1 = time.time()
+        res = self.net.forward(start='conv13')
+        t2 = time.time()
+        print('14: '+str(t2-t1)),
+        endT = time.time()
+        print('T: '+str(endT-startT)),
+        print('')
+
+        return res
+
+    def forwardMultiStageSWgc(self, img, itr):
+        trans = self.transformInput(img)
+        #caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        startT = time.time()
+        
+        t1 = time.time()
+        self.net.blobs['data'].data[...] = trans
+        startLayer = ''
+        # t1 = time.time()
+        self.net.forward(end='conv1')
+        t2 = time.time()
+        print('1: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv1'].data
+        self.net.blobs['conv1'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv1', end='conv2')
+        t2 = time.time()
+        print('2: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv2'].data
+        self.net.blobs['conv2'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv2', end='conv3')
+        t2 = time.time()
+        print('3: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv3'].data
+        self.net.blobs['conv3'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv3', end='conv4')
+        t2 = time.time()
+        print('4: '+str(t2-t1)),
+
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv4'].data
+        self.net.blobs['conv4'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv4', end='conv5')
+        t2 = time.time()
+        print('5: '+str(t2-t1)),
+
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv5'].data
+        self.net.blobs['conv5'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv5', end='conv6')
+        t2 = time.time()
+        print('6: '+str(t2-t1)),
+
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv6'].data
+        self.net.blobs['conv6'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv6', end='conv7')
+        t2 = time.time()
+        print('7: '+str(t2-t1)),
+
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv7'].data
+        self.net.blobs['conv7'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv7', end='conv8')
+        t2 = time.time()
+        print('8: '+str(t2-t1)),
+
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv8'].data
+        self.net.blobs['conv8'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv8', end='conv9')
+        t2 = time.time()
+        print('9: '+str(t2-t1)),
+
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+        
+        t1 = time.time()
+        dataMid = self.net.blobs['conv9'].data
+        self.net.blobs['conv9'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv9', end='conv10')
+        t2 = time.time()
+        print('10: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv10'].data
+        self.net.blobs['conv10'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv10', end='conv11')
+        t2 = time.time()
+        print('11: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv11'].data
+        self.net.blobs['conv11'].data[...] = dataMid
+        # t1 = time.time()
+        self.net.forward(start = 'conv11', end='conv12')
+        t2 = time.time()
+        print('12: '+str(t2-t1)),
+        
+        # caffe.set_device(0)
+        caffe.set_mode_gpu()
+        caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv12'].data
+        #t1 = time.time()
+        self.net.blobs['conv12'].data[...] = dataMid
+        self.net.forward(start = 'conv12', end='conv13')
+        t2 = time.time()
+        print('13: '+str(t2-t1)),
+        
+        caffe.set_device(0)
+        # caffe.set_mode_gpu()
+        # caffe.set_mode_cpu()
+
+        t1 = time.time()
+        dataMid = self.net.blobs['conv13'].data
+        self.net.blobs['conv13'].data[...] = dataMid
+        # t1 = time.time()
+        res = self.net.forward(start='conv13')
+        t2 = time.time()
+        print('14: '+str(t2-t1)),
+        endT = time.time()
+        print('T: '+str(endT-startT)),
+        print('')
+
+        return res
+
     def forwardMultiStage(self, img, itr):
         trans = self.transformInput(img)
         #caffe.set_device(0)
