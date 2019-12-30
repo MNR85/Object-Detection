@@ -88,6 +88,7 @@ if __name__ == '__main__':
     frame = cv2.imread('example_01.jpg')
     tmpF = cv2.imread('example_01.jpg')
     detector.initNet()
+    print('gpu devide:')
     for i in range(0,10):
         netOut = detector.forwardMultiStageDivide(frame, i)
     print('gpu cpu:')
