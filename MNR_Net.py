@@ -23,6 +23,7 @@ class Detector:
         self.caffeModel = caffeModel
         self.useGPU = True
         self.runThread = Value('b', True)
+        self.runGThread = Value('b', True)
         self.netIsInit = Value('b', False)
         # self.initNet()
         self.normilizedImages = Queue(maxsize=0)
@@ -31,6 +32,8 @@ class Detector:
         self.thread1Times = Queue(maxsize=0)
         self.thread2Times = Queue(maxsize=0)
         self.netTimes = Queue(maxsize=0)
+        self.cpuStageFeed = Queue(maxsize=1)
+        self.gpuStageFeed = Queue(maxsize=0)
         self.input_geometry_ = []
         self.input_geometry_ = [300, 300]  # self.net.params[0][0].data.shape
         system('clear')
@@ -563,7 +566,6 @@ class Detector:
         print('')
 
         return res
-        
     def forwardMultiStage(self, img, itr):
         trans = self.transformInput(img)
         #caffe.set_device(0)
@@ -732,6 +734,55 @@ class Detector:
     def getImageFromQ(self):
         sample_resized = self.normilizedImages.get()
         return self.forwardNet(sample_resized)
+    
+    def addImageToQ2(self, img):
+        self.gpuStageFeed.put(self.transformInput(img))
+        print('new image', self.gpuStageFeed.qsize())
+
+    def getImageForCPU(self, ns):
+        # self.initNet()
+        caffe.set_mode_cpu()
+
+        print('in cpu thread')
+        while(self.runGThread.value or not self.cpuStageFeed.empty()):
+            if(self.cpuStageFeed.empty()):
+                time.sleep(0.2)
+                continue
+            print('running cpu...', end=' ')
+            self.thread1Times.put(time.time())
+            ns.net.blobs['conv12'].data[...] =self.cpuStageFeed.get()
+            res = ns.net.forward(start = 'conv12')
+            self.detectionOutputs.put(res)
+            self.thread1Times.put(time.time())
+        print('finished cpu.')
+
+    def getImageForGPU(self, ns):
+        # self.net.set_device(0)
+        # self.net.set_mode_gpu()
+        caffe.set_device(0)
+        caffe.set_mode_gpu()
+        # self.net = caffe.Net(self.protxt, self.caffeModel, caffe.TEST)
+        # self.initNet()
+        print('use gpu:: ',self.useGPU )
+        print('in gpu thread')
+        counter=0
+        while(self.runThread.value or not self.gpuStageFeed.empty()):
+            counter = counter+1
+            print('in while',self.runThread.value , self.gpuStageFeed.empty())
+            if(self.gpuStageFeed.empty()):
+                time.sleep(0.2)
+                continue
+            self.thread2Times.put(time.time())
+            print('running gpu...', end=' ')
+            ns.net.blobs['data'].data[...] = self.gpuStageFeed.get()
+            ns.net.forward(end='conv12')
+            self.cpuStageFeed.put(ns.net.blobs['conv12'].data)
+            self.thread2Times.put(time.time())
+        print('finished gpu.')
+        self.runGThread.value = False
+        return
+
+
 
     def getImageFromQThread(self):
         # self.configGPUusage()
@@ -770,7 +821,21 @@ class Detector:
 
     def newPreprocess(self, timer):
         self.thread1Times.put(timer)
+    def saveDataToFilesMultiStage(self, fileName, moreinfo, frameCount):
+        f = open(fileName + ".csv", "a")
+        f.write(moreinfo+"\n")
+        f.write("GPU use = " + str(self.useGPU) + "\n")
+        f.write("gpuStart, gpuEnd, cpuStart, cpuEnd")
+        f.write("\n")
 
+        for i in range(frameCount):
+                thread1S = self.thread1Times.get()*1000000
+                thread1E = self.thread1Times.get()*1000000
+                thread2S = self.thread2Times.get()*1000000
+                thread2E = self.thread2Times.get()*1000000
+                f.write(str(thread1S)+", "+str(thread1E)+", "+str(thread2S)+", "+str(thread2E)+"\n")
+        f.write("----------------\n\n")
+        f.close()
     def saveDataToFiles(self, fileName, moreinfo, frameCount, isSerial):
         f = open(fileName + ".csv", "a")
         f.write(moreinfo+"\n")

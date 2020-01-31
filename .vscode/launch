@@ -1,32 +1,23 @@
+# 1 "/home/mnr/Documents/objectDetection/.vscode/launch.json"
+# 1 "/usr/bin//"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 1 "<command-line>" 2
+# 1 "/home/mnr/Documents/objectDetection/.vscode/launch.json"
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+
+
     "version": "0.2.0",
     "configurations": [
 
-    
-    
         {
             "name": "g++ build and debug active file",
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["-g",
-                "-std=c++11",
-                "${file}",
-                "/home/mnr/Documents/objectDetection/MNR_Net.cpp",
-                "-lboost_system",
-                "-lcaffe",
-                "-lglog",
-                "-lgflags",
-                "-lpthread",
-                "-lcudart",
-                "-lopencv_videoio",
-                "-lopencv_imgproc",
-                "-lopencv_core",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"],
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -20,9 +20,14 @@ public:
              const string &weights_file);
 
     vector<vector<float>> serialDetector(const cv::Mat &img);
+    vector<vector<float>> serialDetectorMultiStage(const cv::Mat &img);
+    vector<vector<float>> serialDetectorMultiStage(const cv::Mat &img, const cv::Mat &img2);
     vector<vector<float>> pipelineDetectorButWorkSerial(const cv::Mat &img);
+    vector<vector<float>> pipelineDetectorMultiStageButWorkSerial(const cv::Mat &img);
     void addImageToQ(const cv::Mat &img);
     void getImageFromQThread();
+    void getImageFromQThreadMultiStage();
+    void getImageFromQThreadMultiStage2();
 
     bool runThread = true;
     double FPS = 0;
@@ -41,15 +46,18 @@ private:
     cv::Mat transformInputGet(const cv::Mat &img);
     vector<vector<float>> forwardNet(); //cv::Mat *input);
     void WrapInputLayer(std::vector<cv::Mat> *input_channels);
-
+    void GetDataLayer(std::vector<cv::Mat> *input_channels, int layerNum);
+    void SetDataLayer(std::vector<cv::Mat> *input_channels, int layerNum);
     vector<vector<float>> getImageFromQ();
-
+    std::vector<cv::Mat> getImageFromQMultiStage();
+    vector<vector<float>> getImageFromQMultiStage2();
     shared_ptr<Net<float>> net_;
 
     cv::Size input_geometry_;
     int num_channels_;
     cv::Mat mean_;
     std::queue<cv::Mat> normilizedImages;
+    std::queue<std::vector<cv::Mat>> stage1;
     std::mutex mtx; // mutex for critical section
 
     string model_file;

@@ -1,4 +1,5 @@
 import numpy as np
+import multiprocessing 
 from multiprocessing import Process, Value, Queue
 from argparse import ArgumentParser
 import cv2
@@ -58,7 +59,7 @@ def getBoxedImage(origimg, net_out):
         cv2.rectangle(origimg, p1, p2, COLORS[int(cls[i])], 2)#(0,255,0))
         p3 = (max(p1[0], 15), max(p1[1], 15))
         title = "%s:%.2f" % (CLASSES[int(cls[i])], conf[i])
-        # print('title: '+title+', rect: ',box[i])
+        print('title: '+title+', rect: ',box[i])
         cv2.putText(origimg, title, p3, cv2.FONT_ITALIC, 0.6, (0, 255, 0), 1)
         
     return origimg
@@ -88,15 +89,53 @@ if __name__ == '__main__':
     frame = cv2.imread('example_01.jpg')
     tmpF = cv2.imread('example_01.jpg')
     detector.initNet()
-    print('gpu devide:')
-    for i in range(0,10):
-        netOut = detector.forwardMultiStageDivide(frame, i)
-    print('gpu cpu:')
-    for i in range(0,10):
-        detector.forwardMultiStageSWgc(frame, i)
-    print('cpu gpu:')
-    for i in range(0,10):
-        detector.forwardMultiStageSWcg(frame, i)
+    manager = multiprocessing.Manager()
+    ns = manager.Namespace()
+    ns.net=detector.net
+    detector.runThread.value=True
+    # p = Process(name='GpopThread',target=detector.getImageForGPU)
+    p = Process(target=detector.getImageForGPU, args=(ns,))
+    p.daemon = True
+    # p1 = Process(name='CpopThread',target=detector.getImageForCPU)
+    p1 = Process(target=detector.getImageForCPU, args=(ns,))
+    p1.daemon = True
+    p.start()
+    time.sleep(3)
+    p1.start()
+    frameCount=0
+    for i in range(0,100):
+        detector.addImageToQ2(frame)
+        frameCount=frameCount+1
+    detector.runThread.value=False
+    p.join()
+    p1.join()
+    print('Finished process!!')
+
+    for i in range (frameCount):
+        getBoxedImage(frame, detector.detectionOutputs.get())
+
+    moreInfo = 'mode: serial '+str(args['serial'])+', gpu '+str(args['gpu'])
+    if args['serial']==True:
+        method = 'Serial'
+    else:
+        method = 'Pipeline'
+    if args['gpu']==True:
+        hw = 'GPU'
+    else:
+        hw = 'CPU'
+    gpuName=args['name']
+    detector.saveDataToFilesMultiStage("executionTime_python_" + gpuName+"_"+method+"_"+hw, moreInfo, frameCount)
+
+    
+    # print('gpu devide:')
+    # for i in range(0,10):
+    #     netOut = detector.forwardMultiStageDivide(frame, i)
+    # print('gpu cpu:')
+    # for i in range(0,10):
+    #     detector.forwardMultiStageSWgc(frame, i)
+    # print('cpu gpu:')
+    # for i in range(0,10):
+    #     detector.forwardMultiStageSWcg(frame, i)
         #postFrame = getBoxedImage(tmpF, netOut)
         #cv2.imshow("SSD", postFrame)
         #key = cv2.waitKey(1) & 0xFF

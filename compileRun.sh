@@ -1,6 +1,6 @@
 compile() {
     echo "Compiling..."
-    g++ -std=c++11 ssdDetectorM12_expr.cpp MNR_Net.cpp -lboost_system -lcaffe -lglog -lgflags -lpthread -lcudart $(pkg-config opencv --cflags --libs) -o ssd
+    g++ -std=c++11 ssdDetectorM13_multiStage.cpp MNR_Net.cpp -lboost_system -lcaffe -lglog -lgflags -lpthread -lcudart $(pkg-config opencv --cflags --libs) -o ssd
 }
 run() {
     echo "Running... $1 $2 $3"
@@ -8,7 +8,7 @@ run() {
 }
 if [[ "${1}" == "a" ]]; then
     echo "Compile and run"
-    compile && run 10 p g
+    compile && run 1 p g
 elif [[ "${1}" == "c" ]]; then
     echo "Compile only"
     compile

@@ -20,6 +20,35 @@
                 "$gcc"
             ],
             "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "-std=c++11",
+                "${file}",
+                "/home/mnr/Documents/objectDetection/MNR_Net.cpp",
+                "-lboost_system",
+                "-lcaffe",
+                "-lglog",
+                "-lgflags",
+                "-lpthread",
+                "-lcudart",
+                "-lopencv_videoio",
+                "-lopencv_imgproc",
+                "-lopencv_core",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
         }
     ]
 }
